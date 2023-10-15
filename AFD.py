@@ -1,5 +1,7 @@
-from Error import Error
+
 from Token import Token
+from Error import Error
+#from prettytable import PrettyTable
 
 class AFD:
     def __init__(self):
@@ -10,103 +12,81 @@ class AFD:
         self.temporal = ''
         self.estado = 0
         self.simbolos = [";", ",", "=", "{", "}", "[", "]", "(", ")"]
-        self.reservadas = ["claves", "Registros", "imprimir", "imprimirln", "conteo", "promedio", "contarsi", "datos", "max", "min", "exportarReporte", "sumar"]
-
-    def agregar_token(self, caracter, tipo):
-        self.tokens.append(Token(caracter, tipo, self.fila, self.columna))
-        self.temporal = ''
-
-    def agregar_error(self, caracter):
-        self.errores.append(Error(caracter, self.fila, self.columna))
-        self.temporal = ''
+        self.reservadas = ["CLAVES", "REGISTROS", "IMPRIMIR", "IMPRIMIRLN", "CONTEO", "PROMEDIO", "CONTARSI", "DATOS", "MAX", "MIN", "EXPORTARREPORTE", "SUMAR"]
+        self.i = 0
 
     def analizador(self, cadena):
         self.tokens = []
         self.errores = []
-        in_triple_quote = False
-        i = 0
+        self.i = 0
 
-
-        while i < len(cadena):
+        while self.i < len(cadena):
             if self.estado == 0:
-                if cadena[i].isalpha():
-                    self.temporal += cadena[i]
+                if cadena[self.i].isalpha():
+                    self.temporal += cadena[self.i]
                     self.columna += 1
                     self.estado = 1
                 
-                elif cadena[i].isdigit():
-                    self.temporal += cadena[i]
+                elif cadena[self.i].isdigit():
+                    self.temporal += cadena[self.i]
                     self.columna += 1
                     self.estado = 2
 
-                elif cadena[i] in self.simbolos:
-                    self.agregar_token(str(cadena[i]), "Símbolo")
+                elif cadena[self.i] in self.simbolos:
+                    self.agregar_token(cadena[self.i], self.id_simbolos(cadena[self.i]))
                 
-                elif cadena[i] == '"':
-                    self.temporal += cadena[i]
+                elif cadena[self.i] == '"':
+                    self.temporal += cadena[self.i]
                     self.columna += 1
                     self.estado = 5
 
-                elif cadena[i] == '#':
+                elif cadena[self.i] == '#':
                     self.columna += 1
                     self.estado = 7
 
-                elif cadena[i] == "'":
-                    self.temporal += cadena[i]
+                elif cadena[self.i] == "'":
+                    self.temporal += cadena[self.i]
                     self.columna += 1
                     self.estado = 9
                 
-                elif cadena[i] == '\n':
+                elif cadena[self.i] == '\n':
                     self.fila += 1
                     self.columna = 1
 
-                elif cadena[i] == '\r':
+                elif cadena[self.i] in ['\t', ' ']:
+                    self.columna += 1
+
+                elif cadena[self.i] == '\r':
                     pass
-                elif cadena[i] == " ":
-                    self.columna += 1
-
-                elif cadena[i] == "\t":
-                    self.columna += 1
-
-                elif cadena[i:i+3] == '"""':
-                    if in_triple_quote:
-                        in_triple_quote = False
-                        self.columna += 3
-                        i += 2
-                    else:
-                        in_triple_quote = True
-                        self.columna += 3
-                        i += 2
-                    self.estado = 6
 
                 else:
-                    self.temporal += cadena[i]
+                    self.temporal += cadena[self.i]
                     self.agregar_error(self.temporal)
                     self.columna += 1
-                    
+
             elif self.estado == 1:
-                if cadena[i].isalnum():
-                    self.temporal += cadena[i]
+                if cadena[self.i].isalnum():
+                    self.temporal += cadena[self.i]
                     self.columna += 1
                 else:
-                    if self.temporal in self.reservadas:
-                        self.agregar_token(self.temporal.strip(), "Reservada")
+                    if self.temporal.upper() in self.reservadas:
+                        self.agregar_token(self.temporal, self.temporal)
                         self.estado = 0
                         self.columna += 1
-                        i -=1
+                        self.i -= 1
                     else:
                         self.agregar_error(self.temporal)
                         self.estado = 0
                         self.columna += 1
-                        i -= 1
+                        self.i -= 1
 
             elif self.estado == 2:
-                if cadena[i].isdigit():
-                    self.temporal += cadena[i]
+                if cadena[self.i].isdigit():
+                    self.temporal += cadena[self.i]
                     self.columna += 1
 
-                elif cadena[i] == ".":
-                    self.temporal += cadena[i]
+                elif cadena[self.i] == ".":
+                    self.temporal += cadena[self.i]
                     self.columna += 1
                     self.estado = 3
 
@@ -114,42 +94,30 @@ class AFD:
                     self.agregar_token(self.temporal, 'Entero')
                     self.estado = 0
                     self.columna += 1
-                    i -= 1
+                    self.i -= 1
 
             elif self.estado == 3:
-                if cadena[i].isdigit():
-                    self.temporal += cadena[i]
+                if cadena[self.i].isdigit():
+                    self.temporal += cadena[self.i]
                     self.columna += 1
                 else:
                     self.agregar_token(self.temporal, 'Decimal')
                     self.estado = 0
                     self.columna += 1
-                    i -= 1
+                    self.i -= 1
             
             elif self.estado == 5:
-                if cadena[i] != "\"":
-                    self.temporal += cadena[i]
+                if cadena[self.i] != '"':
+                    self.temporal += cadena[self.i]
                     self.columna += 1
                 else:
-                    self.temporal += cadena[i]
-                    self.agregar_token(self.temporal, "Cadena")
+                    self.temporal += cadena[self.i]
+                    self.agregar_token(self.temporal, 'Cadena')
                     self.estado = 0
                     self.columna += 1
 
-            elif self.estado == 6:
-                
-                if cadena[i:i+3] == '"""':
-                    in_triple_quote = False
-                    self.columna += 3
-                    i += 2
-                    self.temporal = ''
-                else:
-                    self.temporal += cadena[i]
-                    self.columna += 1
-                    self.estado = 5
-
             elif self.estado == 7:
-                if cadena[i] == '\n':
+                if cadena[self.i] == '\n':
                     self.estado = 0
                     self.fila += 1
                     self.columna = 1
@@ -157,53 +125,53 @@ class AFD:
                     self.columna += 1
 
             elif self.estado == 9:
-                if cadena[i] == "'":
-                    self.temporal += cadena[i]
+                if cadena[self.i] == "'":
+                    self.temporal += cadena[self.i]
                     self.estado = 10
                     self.columna += 1
                 else:
                     self.agregar_error(self.temporal)
                     self.estado = 0
                     self.columna += 1
-                    i -= 1
+                    self.i -= 1
 
             elif self.estado == 10:
-                if cadena[i] == "'":
-                    self.temporal += cadena[i]
+                if cadena[self.i] == "'":
+                    self.temporal += cadena[self.i]
                     self.estado = 11
                     self.columna += 1
                 else:
                     self.agregar_error(self.temporal)
                     self.estado = 0
                     self.columna += 1
-                    i -= 1
+                    self.i -= 1
             
             elif self.estado == 11:
-                if cadena[i] == "'":
-                    self.temporal += cadena[i]
+                if cadena[self.i] == "'":
+                    self.temporal += cadena[self.i]
                     self.estado = 12
                     self.columna += 1
-                elif cadena[i] == '\n':
-                    self.temporal += cadena[i]
+                elif cadena[self.i] == '\n':
+                    self.temporal += cadena[self.i]
                     self.fila += 1
                     self.columna = 1
                 else:
-                    self.temporal += cadena[i]
+                    self.temporal += cadena[self.i]
                     self.columna += 1
             
             elif self.estado == 12:
-                if cadena[i] == "'":
-                    self.temporal += cadena[i]
+                if cadena[self.i] == "'":
+                    self.temporal += cadena[self.i]
                     self.estado = 13
                     self.columna += 1
                 else:
                     self.agregar_error(self.temporal)
                     self.estado = 0
                     self.columna += 1
-                    i -= 1
+                    self.i -= 1
 
             elif self.estado == 13:
-                if cadena[i] == "'":
+                if cadena[self.i] == "'":
                     self.temporal = ""
                     self.estado = 0
                     self.columna += 1
@@ -211,24 +179,37 @@ class AFD:
                     self.agregar_error(self.temporal)
                     self.estado = 0
                     self.columna += 1
-                    i -= 1
-            i += 1
-        return self.tokens, self.errores
+                    self.i -= 1
 
+            self.i += 1
+        return self.tokens, self.errores
+#----------------------------------ag-----------
+    def agregar_token(self, caracter, tipo):
+        self.tokens.append(Token(caracter, tipo, self.fila, self.columna))
+        self.temporal = ''
+
+    def agregar_error(self, caracter):
+        self.errores.append(Error(caracter, self.fila, self.columna))
+        self.temporal = ''
+#------------------------------------------------------------
+#-----------------------imprimir----------------------------
     def imprimir_tokens(self):
-        print("Tokens:")
-        print("{:<25} {:<15} {:<10} {:<10}".format("Lexema", "Tipo", "Fila", "Columna"))
-        print("-" * 65)
+        print("-" * 175)
+        print("{:<50} {:<75} {:<55} {:<20}".format("Lexema", "Tipo", "Fila", "Columna"))
+        print("-" * 175)
         for token in self.tokens:
-            print("{:<25} {:<15} {:<10} {:<10}".format(token.lexema, token.tipo, token.fila, token.columna))
+            print("{:<50} {:<75} {:<55} {:<20}".format(token.lexema, token.tipo, token.fila, token.columna))
 
     def imprimir_errores(self):
         print("\nErrores:")
-        print("{:<30} {:<10} {:<10}".format("Error", "Fila", "Columna"))
-        print("-" * 45)
+        print("{:<50} {:<55} {:<20}".format("Error", "Fila", "Columna"))
+        print("-" * 125)
         for error in self.errores:
-            print("{:<30} {:<10} {:<10}".format(error.descripcion, error.fila, error.columna))
+            print("{:<50} {:<55} {:<20}".format(error.descripcion, error.fila, error.columna))
 
+
+
+#---------------------------------HTML-----------------------------------
     def generate_reporte_html(self, data, headers, filename, table_color):
         table_html = f'<table border="1" style="background-color: {table_color};">\n'
         table_html += '<tr>'
@@ -248,17 +229,38 @@ class AFD:
             html_file.write('</body>\n</html>')
 
     def generate_tokens_reporte(self):
-        
         tokens_data = [[token.lexema, token.tipo, token.fila, token.columna] for token in self.tokens]
         tokens_headers = ["Lexema", "Tipo", "Fila", "Columna"]
         self.generate_reporte_html(tokens_data, tokens_headers, 'tokens_reporte.html', 'lightyellow')
 
     def generate_errors_reporte(self):
-        
         errors_data = [[error.descripcion, error.fila, error.columna] for error in self.errores]
         errors_headers = ["Error", "Fila", "Columna"]
         self.generate_reporte_html(errors_data, errors_headers, 'errores_reporte.html', 'lightgreen')
+#-------------------------------------------------
 
+#agregar el simbolo que va a servir para el sintactico
+    def id_simbolos(self, character):
+        if character == ';':
+            return "punto y coma"
+        elif character == ',':
+            return "Coma"
+        elif character == '=':
+            return "Igual"
+        elif character == '{':
+            return "Llave de apertura"
+        elif character == '}':
+            return "Llave de cierre"
+        elif character == '[':
+            return "Corchete de apertura"
+        elif character == ']':
+            return "Corchete de cierre"
+        elif character == '(':
+            return "Parentesis de apertura"
+        elif character == ')':
+            return "Parentesis de cierre"
+        else:
+            return "Símbolo"  # para que igual le asigne simbolo /////////// para que no de error 
 
 
 
