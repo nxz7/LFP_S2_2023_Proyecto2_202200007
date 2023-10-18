@@ -58,7 +58,7 @@ def Reportes_opcion(event):
         text_box.insert(tk.END, "arbol")
 
 root = tk.Tk()
-root.title("PROYECTO LFP - 202200007 - ANALISIS LEXICO")
+root.title("PROYECTO 2  LFP - 202200007 - ANALISIS LEXICO y SINTACTICO")
 root.configure(bg="lemon chiffon")
 root.geometry("1300x350") # ventanaaaaaaa
 

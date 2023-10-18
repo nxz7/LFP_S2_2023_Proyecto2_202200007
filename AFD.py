@@ -1,7 +1,7 @@
 
 from Token import Token
 from Error import Error
-#from prettytable import PrettyTable
+
 
 class AFD:
     def __init__(self):

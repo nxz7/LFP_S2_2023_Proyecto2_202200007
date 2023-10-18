@@ -1,84 +1,87 @@
 class funciones:
-    def contarSi(self, records, keys, field, value):
-        cadena = field.replace('"', '')
-        count = 0
-        large = len(records)
-
-        for val in keys:
+    #CAMPO EL VALOR DE LAS CLAVES ()
+    def contarSi(self, registros, claves, campo, valor):
+        cadena = campo.replace('"', '')
+        conteo = 0
+        largo = len(registros)
+#CLAVES >>> EL VALOR ESPECIFICO QUE SE VA A CONTAR, itera y va aumentando el valor 
+        for val in claves:
             if str(val) == str(cadena):
                 suma = 0
                 i = 0
-                while large>i:
-                    if records[i][count] == str(value).replace('"', ''):
+                while largo > i:
+                    if registros[i][conteo] == str(valor).replace('"', ''):
                         suma += 1
                     i += 1
                 return str(suma)
-            count += 1
+            conteo += 1
         return None
-    
-    def max(self, records, keys, field):
-        cadena = field.replace('"', '')
-        count = 0
-        max = 0
-        large = len(records)
 
-        for value in keys:
-            if value == cadena:
+    def max(self, registros, claves, campo):
+        cadena = campo.replace('"', '')
+        conteo = 0
+        maximo = 0
+        largo = len(registros)
+#itera 
+        for valor in claves:
+            if valor == cadena:
                 i = 0
-                while large>i:
-                    if float(records[i][count]) > max:
-                        max = float(records[i][count])
+                #va actualizando el valor si es uno maximo
+                while largo > i:
+                    if float(registros[i][conteo]) > maximo:
+                        maximo = float(registros[i][conteo])
                     i += 1
-                return str(max)
-            count += 1
-        return None         
-
-    def min(self, records, keys, field):
-        cadena = field.replace('"', '')
-        count = 0
-        min = float('inf')
-        large = len(records)
-
-        for value in keys:
-            if value == cadena:
-                i = 0
-                while large>i:
-                    if float(records[i][count]) < min:
-                        min = float(records[i][count])
-                    i += 1
-                return str(min)
-            count += 1
+                return str(maximo)
+            conteo += 1
         return None
-    
-    def promedio(self, records, keys, field):
-        cadena = field.replace('"', '')
-        count = 0
-        large = len(records)
 
-        for value in keys:
-            if value == cadena:
+    def min(self, registros, claves, campo):
+        cadena = campo.replace('"', '')
+        conteo = 0
+        minimo = float('inf')
+        largo = len(registros)
+
+        for valor in claves:
+            if valor == cadena:
+                i = 0
+                while largo > i:
+                    if float(registros[i][conteo]) < minimo:
+                        minimo = float(registros[i][conteo])
+                    i += 1
+                return str(minimo)
+            conteo += 1
+        return None
+
+    def promedio(self, registros, claves, campo):
+        cadena = campo.replace('"', '')
+        conteo = 0
+        largo = len(registros)
+
+        for valor in claves:
+            if valor == cadena:
+                #sumando de acuerdo al campo y luego divide i
                 suma = 0
                 i = 0
-                while large>i:
-                    suma += float(records[i][count])
+                while largo > i:
+                    suma += float(registros[i][conteo])
                     i += 1
-                total = float(suma)/float(i)
+                total = float(suma) / float(i)
                 return str(round(total, 2))
-            count += 1
+            conteo += 1
         return None
-    
-    def sumar(self, records, keys, field):
-        cadena = field.replace('"', '')
-        count = 0
-        large = len(records)
 
-        for value in keys:
-            if value == cadena:
+    def sumar(self, registros, claves, campo):
+        cadena = campo.replace('"', '')
+        conteo = 0
+        largo = len(registros)
+
+        for valor in claves:
+            if valor == cadena:
                 suma = 0
                 i = 0
-                while large>i:
-                    suma += float(records[i][count])
+                while largo > i:
+                    suma += float(registros[i][conteo])
                     i += 1
                 return str(round(suma, 2))
-            count += 1
+            conteo += 1
         return None
