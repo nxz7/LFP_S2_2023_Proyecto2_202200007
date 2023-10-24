@@ -9,7 +9,7 @@ def Analizar_clicked():
     global archivo_abierto, resultado
     text_box.insert(tk.END, "ANALIZANDO ARCHIVO")
     mostrar_console("CONTENIDO ANALIZADO")
-    #-----------------------
+    #--------------------SINTACTICO>>>E---
     parser = sintactico(resultado[0], resultado[1])
     consola = parser.analizar_sintactico()
     console.configure(state='normal')
@@ -17,7 +17,7 @@ def Analizar_clicked():
     console.insert(tk.END, consola[0])  
     console.configure(state='disabled')
 
-
+#CARGA Y LEX DE UNA >> ERRORES SOLO LEX
 def Cargar_clicked():
     global archivo_abierto, contenido, resultado
     archivo_abierto = filedialog.askopenfilename(filetypes=[("BizData Files", "*.bizdata")])

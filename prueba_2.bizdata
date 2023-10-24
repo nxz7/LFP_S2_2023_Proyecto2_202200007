@@ -27,7 +27,7 @@ COMENTARIO MULTILINEA
   '''
 
 
-imprimir("Reporte de ");
+imprimir("primer print ");
 imprimir("Abarroteria");
 imprimirln("enterrrrrrrr ");
 imprimirln("otro enter");
@@ -38,8 +38,8 @@ conteo();
 promedio("stock");
 promedio("precio_compra");
 contarsi("precio_venta", 18);
-sumar("stock");
-max("precio_venta");
+sumar("precio_venta");
+max("stock");
 min("precio_compra");
 exportarReporte("Prueba");
 imprimirln("final");
